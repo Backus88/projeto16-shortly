@@ -4,11 +4,14 @@ const {Pool} = pkg;
 
 
 dotenv.config();
-
-
-const client = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+let client;
+try {
+  client = new Pool({
+    connectionString: process.env.DATABASE_URL,
+  });
+} catch (error) {
+  console.log('erro opening the db');
+}
 
 
 export default client;
