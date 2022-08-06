@@ -1,12 +1,15 @@
 import {Router} from 'express';
-import {shortenUrl,
+import {
+  shortenUrl,
   getUrls,
-  getShortUrl} from '../controllers/urlController.js';
+  getShortUrl,
+  deleteUrl} from '../controllers/urlController.js';
 import shortenUrlValidation from '../middlewares/shortenurlValidation.js';
 
 const urlRouter = Router();
 urlRouter.post('/urls/shorten', shortenUrlValidation, shortenUrl);
 urlRouter.get('/urls/:id', getUrls);
 urlRouter.get('/urls/open/:shortUrl', getShortUrl);
+urlRouter.delete('/urls/:id', deleteUrl);
 
 export default urlRouter;

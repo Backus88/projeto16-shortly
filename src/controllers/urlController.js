@@ -15,8 +15,14 @@ export async function shortenUrl(req, res) {
   const shortenUrl = nanoid(8);
   const token = authorization?.replace('Bearer ', '');
   const key = process.env.ACESS_TOKEN;
-  console.log('aki');
-  const tokenData = jwt.verify(token, key);
+  const tokenData = jwt.verify(token, key, (err, payload)=>{
+    if (err) {
+      return;
+    }
+    return payload;
+  },
+  );
+  console.log(tokenData);
   const urlShort = {shortUrl: shortenUrl};
   const countStart = 0;
   if (!tokenData) {
@@ -83,6 +89,46 @@ export async function getShortUrl(req, res) {
                         SET "visitCount" = "visitCount" +1 
                         WHERE "urlId" = $1`, [thereIsUrl.rows[0]?.id]);
     res.redirect(thereIsUrl.rows[0].url);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
+
+/**
+ * @param  {Object} req the require.
+ * @param  {Object} res the request.
+ */
+export async function deleteUrl(req, res) {
+  const urlId = parseInt(req.params.id);
+  const {authorization}= req.headers;
+  const token = authorization?.replace('Bearer ', '');
+  const key = process.env.ACESS_TOKEN;
+  const tokenData = jwt.verify(token, key, (err, payload)=>{
+    if (err) {
+      return;
+    }
+    return payload;
+  },
+  );
+  if (!tokenData) {
+    res.sendStatus(401);
+    return;
+  }
+  try {
+    const thereIsId = await client.query(`SELECT id, "userId" 
+                                    FROM urls 
+                                    WHERE id = $1`, [urlId]);
+    if (thereIsId.rowCount ===0) {
+      res.sendStatus(404);
+      return;
+    }
+    if (!token || thereIsId.rows[0].userId !== tokenData.userId) {
+      res.sendStatus(401);
+      return;
+    }
+    await client.query(`DELETE FROM likes WHERE "urlId" = $1`, [urlId]);
+    await client.query(`DELETE FROM urls WHERE id = $1`, [urlId]);
+    res.sendStatus(204);
   } catch (error) {
     res.status(500).send(error);
   }
