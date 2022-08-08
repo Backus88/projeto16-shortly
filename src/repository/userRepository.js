@@ -41,7 +41,7 @@ async function queryRanking() {
   JOIN urls on urls."userId"= users.id
   JOIN likes on likes."urlId" = urls.id
   GROUP BY users.id
-  ORDER BY "linksCount" DESC
+  ORDER BY "visitCount" DESC
   LIMIT 10`);
 }
 
