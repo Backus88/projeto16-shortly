@@ -11,6 +11,7 @@ async function queryUniqueUser(userId) {
   'visitCount',(SELECT SUM("visitCount") 
  FROM likes 
  JOIN users u ON u.id = likes."userId"
+ WHERE likes."userId"= $1
  GROUP BY likes."userId", u.id) ,
   'shortenedUrls',
    json_agg(   
@@ -35,12 +36,10 @@ async function queryRanking() {
   return client.query(`SELECT users.id AS id , 
     users.name, 
     CAST(COUNT(urls."userId")AS INT) AS "linksCount", 
-    CAST((SELECT SUM("visitCount")
-    FROM likes 
-    JOIN users u ON u.id = likes."userId"
-    GROUP BY likes."userId", u.id)AS INT) AS "visitCount"
+    CAST( SUM(likes."visitCount")AS INT) AS "visitCount"
   FROM users
   JOIN urls on urls."userId"= users.id
+  JOIN likes on likes."urlId" = urls.id
   GROUP BY users.id
   ORDER BY "linksCount" DESC
   LIMIT 10`);
