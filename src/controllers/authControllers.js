@@ -1,7 +1,7 @@
-import client from '../database/db.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import {authRepository} from '../repository/authRepository.js';
 
 dotenv.config();
 
@@ -13,15 +13,13 @@ export async function signUp(req, res) {
   const {name, email, password} = req.body;
   const passwordHash = bcrypt.hashSync(password, 10);
   try {
-    const thereIsEmail =
-        await client.query('SELECT * FROM users WHERE email = $1', [email]);
+    const thereIsEmail = await authRepository.queryGetUserByEmail(email);
 
     if (thereIsEmail.rowCount > 0) {
       res.sendStatus(409);
       return;
     }
-    await client.query(`INSERT INTO users(name, email, password) 
-        VALUES ($1, $2, $3)`, [name, email, passwordHash]);
+    await authRepository.queryInsertUser(name, email, passwordHash);
     res.sendStatus(201);
   } catch (error) {
     res.status(500).send(error);
@@ -35,10 +33,7 @@ export async function signUp(req, res) {
 export async function signIn(req, res) {
   const {email, password} = req.body;
   try {
-    const thereIsEmail =
-      await client.query(`SELECT password, id
-                          FROM users 
-                          WHERE email = $1`, [email]);
+    const thereIsEmail = await authRepository.queryGetUserByEmail(email);
     const passwordFound = thereIsEmail.rows[0]?.password;
     const idFound = thereIsEmail.rows[0]?.id;
     const data = {userId: idFound};
