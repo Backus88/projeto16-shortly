@@ -1,7 +1,7 @@
-import client from '../database/db.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import {nanoid} from 'nanoid';
+import {urlRepository} from '../repository/urlRepository.js';
 
 dotenv.config();
 
@@ -30,11 +30,13 @@ export async function shortenUrl(req, res) {
     return;
   }
   try {
-    const urlId= await client.query(`INSERT INTO urls(url, "shortUrl", "userId")
-        VALUES($1,$2,$3) RETURNING id`, [url, shortenUrl, tokenData.userId]);
+    const urlId= await urlRepository.queryGetId(url,
+        shortenUrl,
+        tokenData.userId);
 
-    await client.query(`INSERT INTO likes("urlId", "userId", "visitCount") 
-        VALUES($1,$2,$3)`, [urlId.rows[0].id, tokenData.userId, countStart]);
+    await urlRepository.queryInsertUrl(urlId.rows[0].id,
+        tokenData.userId,
+        countStart);
 
     res.status(201).send(urlShort);
   } catch (error) {
@@ -49,9 +51,7 @@ export async function shortenUrl(req, res) {
 export async function getUrls(req, res) {
   const urlId = parseInt(req.params.id);
   try {
-    const thereIsId = await client.query(`SELECT id, "shortUrl", url 
-                                          FROM urls 
-                                          WHERE id = $1`, [urlId]);
+    const thereIsId = await urlRepository.queryIdUrl(urlId);
     if (thereIsId.rowCount ===0) {
       res.sendStatus(404);
       return;
@@ -75,9 +75,7 @@ export async function getUrls(req, res) {
 export async function getShortUrl(req, res) {
   const shortUrl = req.params.shortUrl;
   try {
-    const thereIsUrl = await client.query(`SELECT id, url 
-                                    FROM urls 
-                                    WHERE "shortUrl" = $1`, [shortUrl]);
+    const thereIsUrl = await urlRepository.queryUrlByShorten(shortUrl);
 
     console.log(thereIsUrl.rows[0].url);
     if (thereIsUrl.rowCount===0) {
@@ -85,9 +83,7 @@ export async function getShortUrl(req, res) {
       return;
     }
 
-    await client.query(`UPDATE likes 
-                        SET "visitCount" = "visitCount" +1 
-                        WHERE "urlId" = $1`, [thereIsUrl.rows[0]?.id]);
+    await urlRepository.queryUpdateCount(thereIsUrl.rows[0]?.id);
     res.redirect(thereIsUrl.rows[0].url);
   } catch (error) {
     res.status(500).send(error);
@@ -115,9 +111,7 @@ export async function deleteUrl(req, res) {
     return;
   }
   try {
-    const thereIsId = await client.query(`SELECT id, "userId" 
-                                    FROM urls 
-                                    WHERE id = $1`, [urlId]);
+    const thereIsId = await urlRepository.queryIdUrl(urlId);
     if (thereIsId.rowCount ===0) {
       res.sendStatus(404);
       return;
@@ -126,8 +120,8 @@ export async function deleteUrl(req, res) {
       res.sendStatus(401);
       return;
     }
-    await client.query(`DELETE FROM likes WHERE "urlId" = $1`, [urlId]);
-    await client.query(`DELETE FROM urls WHERE id = $1`, [urlId]);
+    await urlRepository.queryDeleteViews(urlId);
+    await urlRepository.queryDeleteUrls(urlId);
     res.sendStatus(204);
   } catch (error) {
     res.status(500).send(error);
