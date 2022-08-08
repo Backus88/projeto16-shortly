@@ -8,6 +8,9 @@ let client;
 try {
   client = new Pool({
     connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
   });
 } catch (error) {
   console.log('erro opening the db');
