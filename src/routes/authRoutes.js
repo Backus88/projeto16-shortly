@@ -1,10 +1,10 @@
 import {Router} from 'express';
 import {signUp, signIn} from '../controllers/authControllers.js';
-import signupValidation from '../middlewares/signupValidation.js';
-import signinValidation from '../middlewares/signinValidation.js';
+import {signInSchema, signUpSchema} from '../schemas/authSchema.js';
+import joiValidation from '../middlewares/joiValidation.js';
 
 const authRouter = Router();
-authRouter.post('/signup', signupValidation, signUp);
-authRouter.post('/signin', signinValidation, signIn);
+authRouter.post('/signup', joiValidation(signUpSchema), signUp);
+authRouter.post('/signin', joiValidation(signInSchema), signIn);
 
 export default authRouter;

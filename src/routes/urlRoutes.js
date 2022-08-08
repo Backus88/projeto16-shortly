@@ -4,12 +4,13 @@ import {
   getUrls,
   getShortUrl,
   deleteUrl} from '../controllers/urlController.js';
-import shortenUrlValidation from '../middlewares/shortenurlValidation.js';
 import credentialsValidation from '../middlewares/credentialsValidation.js';
+import joiValidation from '../middlewares/joiValidation.js';
+import {shortenUrlSchema} from '../schemas/urlSchema.js';
 
 const urlRouter = Router();
 urlRouter.post('/urls/shorten',
-    credentialsValidation, shortenUrlValidation, shortenUrl);
+    credentialsValidation, joiValidation(shortenUrlSchema), shortenUrl);
 urlRouter.get('/urls/:id', getUrls);
 urlRouter.get('/urls/open/:shortUrl', getShortUrl);
 urlRouter.delete('/urls/:id', credentialsValidation, deleteUrl);

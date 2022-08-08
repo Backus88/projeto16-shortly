@@ -34,6 +34,10 @@ export async function signIn(req, res) {
   const {email, password} = req.body;
   try {
     const thereIsEmail = await authRepository.queryGetUserByEmail(email);
+    if (thereIsEmail.rowCount ===0) {
+      res.sendStatus(401);
+      return;
+    }
     const passwordFound = thereIsEmail.rows[0]?.password;
     const idFound = thereIsEmail.rows[0]?.id;
     const data = {userId: idFound};
