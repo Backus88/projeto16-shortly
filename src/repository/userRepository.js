@@ -34,11 +34,11 @@ async function queryUniqueUser(userId) {
 async function queryRanking() {
   return client.query(`SELECT users.id AS id , 
     users.name, 
-    COUNT(urls."userId") AS "linksCount", 
-    (SELECT SUM("visitCount")
+    CAST(COUNT(urls."userId")AS INT) AS "linksCount", 
+    CAST((SELECT SUM("visitCount")
     FROM likes 
     JOIN users u ON u.id = likes."userId"
-    GROUP BY likes."userId", u.id) AS "visitCount"
+    GROUP BY likes."userId", u.id)AS INT) AS "visitCount"
   FROM users
   JOIN urls on urls."userId"= users.id
   GROUP BY users.id

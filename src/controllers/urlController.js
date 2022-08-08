@@ -62,14 +62,13 @@ export async function getShortUrl(req, res) {
   try {
     const thereIsUrl = await urlRepository.queryUrlByShorten(shortUrl);
 
-    console.log(thereIsUrl.rows[0].url);
     if (thereIsUrl.rowCount===0) {
       res.sendStatus(404);
       return;
     }
 
     await urlRepository.queryUpdateCount(thereIsUrl.rows[0]?.id);
-    res.redirect(thereIsUrl.rows[0].url);
+    res.redirect(200, thereIsUrl.rows[0].url);
   } catch (error) {
     res.status(500).send(error);
   }
