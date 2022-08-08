@@ -1,9 +1,9 @@
 import client from '../database/db.js';
 
 /**
- *  @param  {String} url query id.
- * @param  {String} shortenUrl query id.
- * @param  {Number} id query id.
+ *  @param  {String} url insert url.
+ * @param  {String} shortenUrl insert shortenUrl.
+ * @param  {Number} id insert userId.
  */
 async function queryGetId(url, shortenUrl, id) {
   return client.query(`INSERT INTO urls(url, "shortUrl", "userId")
@@ -11,9 +11,9 @@ async function queryGetId(url, shortenUrl, id) {
 }
 
 /**
- *  @param  {Number} urlId query id.
- * @param  {Number} userId query id.
- * @param  {Number} count query id.
+ *  @param  {Number} urlId insert urlId.
+ * @param  {Number} userId insert userId.
+ * @param  {Number} count insert count default 0.
  */
 async function queryInsertUrl(urlId, userId, count) {
   return client.query(`INSERT INTO likes("urlId", "userId", "visitCount") 
@@ -21,7 +21,7 @@ async function queryInsertUrl(urlId, userId, count) {
 }
 
 /**
- *  @param  {Number} urlId query id.
+ *  @param  {Number} urlId select by urlId.
  */
 async function queryIdUrl(urlId) {
   return client.query(`SELECT id, "shortUrl", url, "userId" 
@@ -30,7 +30,7 @@ async function queryIdUrl(urlId) {
 }
 
 /**
- *  @param  {String} shortUrl query id.
+ *  @param  {String} shortUrl select by shortUrl.
  */
 async function queryUrlByShorten(shortUrl) {
   return client.query(`SELECT id, url 
@@ -38,7 +38,7 @@ async function queryUrlByShorten(shortUrl) {
                        WHERE "shortUrl" = $1`, [shortUrl]);
 }
 /**
- *  @param  {Number} id query id.
+ *  @param  {Number} id update where id = urlId.
  */
 async function queryUpdateCount(id) {
   return client.query(`UPDATE likes 
@@ -46,13 +46,13 @@ async function queryUpdateCount(id) {
                        WHERE "urlId" = $1`, [id]);
 }
 /**
- *  @param  {Number} urlId query id.
+ *  @param  {Number} urlId delete by urlId.
  */
 async function queryDeleteViews(urlId) {
   return client.query(`DELETE FROM likes WHERE "urlId" = $1`, [urlId]);
 }
 /**
- *  @param  {Number} urlId query id.
+ *  @param  {Number} urlId delete by urlId.
  */
 async function queryDeleteUrls(urlId) {
   return client.query(`DELETE FROM urls WHERE id = $1`, [urlId]);

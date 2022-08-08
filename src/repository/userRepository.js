@@ -1,7 +1,7 @@
 import client from '../database/db.js';
 
 /**
- * @param  {Number} userId query id.
+ * @param  {Number} userId select by userId.
  */
 async function queryUniqueUser(userId) {
   return client.query(`SELECT

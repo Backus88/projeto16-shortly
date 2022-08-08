@@ -1,7 +1,7 @@
 import client from '../database/db.js';
 
 /**
- *  @param  {String} email query id.
+ *  @param  {String} email select by email.
  */
 async function queryGetUserByEmail(email) {
   return client.query(`SELECT * 
@@ -9,9 +9,9 @@ async function queryGetUserByEmail(email) {
                        WHERE email = $1`, [email]); ;
 }
 /**
- * @param  {String} name query id.
- * @param  {String} email query id.
- * @param  {String} passwordHash query id.
+ * @param  {String} name insert name.
+ * @param  {String} email insert email.
+ * @param  {String} passwordHash insert password.
  */
 async function queryInsertUser(name, email, passwordHash) {
   client.query(`INSERT INTO users(name, email, password) 

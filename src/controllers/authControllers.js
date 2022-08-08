@@ -6,8 +6,8 @@ import {authRepository} from '../repository/authRepository.js';
 dotenv.config();
 
 /**
- * @param  {Object} req the require.
- * @param  {Object} res the request.
+ * @param  {Object} req the request.
+ * @param  {Object} res the reesponse.
  */
 export async function signUp(req, res) {
   const {name, email, password} = req.body;
@@ -27,8 +27,8 @@ export async function signUp(req, res) {
 }
 
 /**
- * @param  {Object} req the require.
- * @param  {Object} res the request.
+ * @param  {Object} req the request.
+ * @param  {Object} res the respose.
  */
 export async function signIn(req, res) {
   const {email, password} = req.body;

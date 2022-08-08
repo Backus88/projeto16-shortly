@@ -4,8 +4,8 @@ import {userRepository} from '../repository/userRepository.js';
 dotenv.config();
 
 /**
- * @param  {Object} req the require.
- * @param  {Object} res the request.
+ * @param  {Object} req the request.
+ * @param  {Object} res the response.
  */
 export async function getUniqueUser(req, res) {
   const tokenData = req.token;
@@ -30,8 +30,8 @@ export async function getUniqueUser(req, res) {
 
 
 /**
- * @param  {Object} req the require.
- * @param  {Object} res the request.
+ * @param  {Object} req the request.
+ * @param  {Object} res the response.
  */
 export async function userRanking(req, res) {
   try {

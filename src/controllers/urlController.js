@@ -5,8 +5,8 @@ import {urlRepository} from '../repository/urlRepository.js';
 dotenv.config();
 
 /**
- * @param  {Object} req the require.
- * @param  {Object} res the request.
+ * @param  {Object} req the request.
+ * @param  {Object} res the response.
  */
 export async function shortenUrl(req, res) {
   const {url}= req.body;
@@ -30,8 +30,8 @@ export async function shortenUrl(req, res) {
 }
 
 /**
- * @param  {Object} req the require.
- * @param  {Object} res the request.
+ * @param  {Object} req the request.
+ * @param  {Object} res the response.
  */
 export async function getUrls(req, res) {
   const urlId = parseInt(req.params.id);
@@ -54,8 +54,8 @@ export async function getUrls(req, res) {
 }
 
 /**
- * @param  {Object} req the require.
- * @param  {Object} res the request.
+ * @param  {Object} req the request.
+ * @param  {Object} res the response.
  */
 export async function getShortUrl(req, res) {
   const shortUrl = req.params.shortUrl;
@@ -75,8 +75,8 @@ export async function getShortUrl(req, res) {
 }
 
 /**
- * @param  {Object} req the require.
- * @param  {Object} res the request.
+ * @param  {Object} req the request.
+ * @param  {Object} res the response.
  */
 export async function deleteUrl(req, res) {
   const urlId = parseInt(req.params.id);

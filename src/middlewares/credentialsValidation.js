@@ -4,8 +4,8 @@ import jwt from 'jsonwebtoken';
 dotenv.config();
 
 /**
- * @param  {Object} req
- * @param  {Object} res
+ * @param  {Object} req the require
+ * @param  {Object} res the response
  * @param  {Function} next
  * @return {void}
  */
