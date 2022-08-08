@@ -1,6 +1,6 @@
-import client from '../database/db.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import {userRepository} from '../repository/userRepository.js';
 
 dotenv.config();
 
@@ -24,30 +24,7 @@ export async function getUniqueUser(req, res) {
     return;
   }
   try {
-    const thereIsUser = await client.query(`SELECT
-    json_build_object(
-    'id', users.id, 
-    'name',users.name, 
-    'visitCount',(SELECT SUM("visitCount") 
-   FROM likes 
-   JOIN users u ON u.id = likes."userId"
-   GROUP BY likes."userId", u.id) ,
-    'shortenedUrls',
-     json_agg(   
-     json_build_object(  
-     'id',urls.id,
-     'shortUrl',urls."shortUrl",
-     'url',urls.url,
-     'visitCount',l."visitCount"
-    )
-    )
-   )
-   FROM users
-   JOIN urls  on urls."userId" = users.id
-   JOIN likes l on l."urlId" = urls.id
-   WHERE users.id = $1
-   GROUP BY users.id
-   `, [tokenData.userId]);
+    const thereIsUser = await userRepository.queryUniqueUser(tokenData.userId);
 
     if (thereIsUser.rowCount ===0) {
       res.sendStatus(404);
@@ -72,18 +49,7 @@ export async function getUniqueUser(req, res) {
  */
 export async function userRanking(req, res) {
   try {
-    const ranking = await client.query(`SELECT users.id AS id , 
-        users.name, 
-        COUNT(urls."userId") AS "linksCount", 
-        (SELECT SUM("visitCount")
-        FROM likes 
-        JOIN users u ON u.id = likes."userId"
-        GROUP BY likes."userId", u.id) AS "visitCount"
-      FROM users
-      JOIN urls on urls."userId"= users.id
-      GROUP BY users.id
-      ORDER BY "linksCount" DESC
-      LIMIT 10`);
+    const ranking = await userRepository.queryRanking();
     if (ranking.rowCount === 0) {
       res.sendStatus(404);
       return;
