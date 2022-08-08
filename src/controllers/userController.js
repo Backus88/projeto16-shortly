@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import {userRepository} from '../repository/userRepository.js';
 
@@ -9,20 +8,7 @@ dotenv.config();
  * @param  {Object} res the request.
  */
 export async function getUniqueUser(req, res) {
-  const {authorization}= req.headers;
-  const token = authorization?.replace('Bearer ', '');
-  const key = process.env.ACESS_TOKEN;
-  const tokenData = jwt.verify(token, key, (err, payload)=>{
-    if (err) {
-      return;
-    }
-    return payload;
-  },
-  );
-  if (!tokenData) {
-    res.sendStatus(401);
-    return;
-  }
+  const tokenData = req.token;
   try {
     const thereIsUser = await userRepository.queryUniqueUser(tokenData.userId);
 

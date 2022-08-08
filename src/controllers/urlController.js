@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import {nanoid} from 'nanoid';
 import {urlRepository} from '../repository/urlRepository.js';
@@ -10,25 +9,11 @@ dotenv.config();
  * @param  {Object} res the request.
  */
 export async function shortenUrl(req, res) {
-  const {authorization} = req.headers;
   const {url}= req.body;
   const shortenUrl = nanoid(8);
-  const token = authorization?.replace('Bearer ', '');
-  const key = process.env.ACESS_TOKEN;
-  const tokenData = jwt.verify(token, key, (err, payload)=>{
-    if (err) {
-      return;
-    }
-    return payload;
-  },
-  );
-  console.log(tokenData);
   const urlShort = {shortUrl: shortenUrl};
   const countStart = 0;
-  if (!tokenData) {
-    res.sendStatus(401);
-    return;
-  }
+  const tokenData = req.token;
   try {
     const urlId= await urlRepository.queryGetId(url,
         shortenUrl,
@@ -96,27 +81,14 @@ export async function getShortUrl(req, res) {
  */
 export async function deleteUrl(req, res) {
   const urlId = parseInt(req.params.id);
-  const {authorization}= req.headers;
-  const token = authorization?.replace('Bearer ', '');
-  const key = process.env.ACESS_TOKEN;
-  const tokenData = jwt.verify(token, key, (err, payload)=>{
-    if (err) {
-      return;
-    }
-    return payload;
-  },
-  );
-  if (!tokenData) {
-    res.sendStatus(401);
-    return;
-  }
+  const tokenData = req.token;
   try {
     const thereIsId = await urlRepository.queryIdUrl(urlId);
     if (thereIsId.rowCount ===0) {
       res.sendStatus(404);
       return;
     }
-    if (!token || thereIsId.rows[0].userId !== tokenData.userId) {
+    if (!tokenData || thereIsId.rows[0].userId !== tokenData.userId) {
       res.sendStatus(401);
       return;
     }
